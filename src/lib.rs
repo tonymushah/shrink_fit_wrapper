@@ -1,4 +1,4 @@
-//! An _extremely_ simple, "automatic" `shrink_to_fit` on any mut.
+//! An _extremely_ simple, "idiomatic" `shrink_to_fit` on any mut.
 
 use std::{
     collections::{BinaryHeap, HashMap, HashSet, VecDeque},
@@ -116,7 +116,7 @@ where
     S: ShrinkFitable,
 {
     /// Borrow the wrapper as mutable guard
-    pub fn as_inner_mut(&mut self) -> ShrinkFitWrapperMutGuard<'_, S> {
+    pub fn as_mut(&mut self) -> ShrinkFitWrapperMutGuard<'_, S> {
         ShrinkFitWrapperMutGuard(Some(self))
     }
     /// Call [`ShrinkFitable::shrink_to_fit`] of the underlying container
@@ -202,7 +202,7 @@ mod tests {
             my_vec.extend(0..3u32);
             my_vec
         });
-        drop(stack.as_inner_mut());
+        drop(stack.as_mut());
         assert_eq!(stack.len(), stack.capacity());
     }
     #[test]
@@ -213,10 +213,10 @@ mod tests {
             my_vec
         })
         .set_shrink_duration_cycle(Duration::from_secs(2));
-        drop(stack.as_inner_mut());
+        drop(stack.as_mut());
         assert_ne!(stack.len(), stack.capacity());
         sleep(Duration::from_secs(3));
-        drop(stack.as_inner_mut());
+        drop(stack.as_mut());
         assert_eq!(stack.len(), stack.capacity());
     }
 }
