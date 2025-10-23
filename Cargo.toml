@@ -1,0 +1,8 @@
+[package]
+name = "shrink_fit_wrapper"
+version = "1.0.0"
+edition = "2021"
+authors = ["tonymushah <tonymushahdev06@yahoo.com>"]
+description = "Provides a simple wrapper to `shrink fit` std::collections easily"
+
+[dependencies]
