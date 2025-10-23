@@ -36,7 +36,7 @@ my_vec.as_mut().push(2);
 
 ```
 
-*Note*: It is worth noting that by setting a `shrink_duration_cycle`, the wrapper doesn't periodically `shrink_to_fit` the underlying container at that duration. See `ShrinkFitWrapperMutGuard::drop` implementation.
+*Note*: It is worth noting that by setting a `shrink_duration_cycle`, the wrapper doesn't periodically `shrink_to_fit` the underlying container at that duration. See [`ShrinkFitWrapperMutGuard::drop` implementation](https://github.com/tonymushah/shrink_fit_wrapper/blob/0b17005e22d749915957a497728d8ce2d64075a1/src/lib.rs#L174).
 
 ## License
 
