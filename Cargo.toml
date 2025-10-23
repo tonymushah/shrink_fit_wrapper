@@ -4,5 +4,6 @@ version = "1.0.0"
 edition = "2021"
 authors = ["tonymushah <tonymushahdev06@yahoo.com>"]
 description = "\"shrink_to_fit\" on any \"mut\""
+license-file = "LICENSE"
 
 [dependencies]
