@@ -1,3 +1,4 @@
+/// An _extremely_ simple, "automatic" `shrink_to_fit` on any mut
 use std::{
     collections::{BinaryHeap, HashMap, HashSet, VecDeque},
     hash::{BuildHasher, Hash},
@@ -5,17 +6,20 @@ use std::{
     time::{Duration, Instant},
 };
 
+/// Trait for types that can `shrink_to_fit`
 pub trait ShrinkFitable {
     fn shrink_to_fit(&mut self);
 }
 
 impl<T> ShrinkFitable for Vec<T> {
+    /// Call the [`Vec::shrink_to_fit`] method
     fn shrink_to_fit(&mut self) {
         self.shrink_to_fit();
     }
 }
 
 impl<T> ShrinkFitable for VecDeque<T> {
+    /// Call the [`VecDeque::shrink_to_fit`] method
     fn shrink_to_fit(&mut self) {
         self.shrink_to_fit();
     }
@@ -26,6 +30,7 @@ where
     T: Eq + Hash,
     S: BuildHasher,
 {
+    /// Call the [`HashSet::shrink_to_fit`] method
     fn shrink_to_fit(&mut self) {
         self.shrink_to_fit();
     }
@@ -35,6 +40,7 @@ impl<T> ShrinkFitable for BinaryHeap<T>
 where
     T: Ord,
 {
+    /// Call the [`BinaryHeap::shrink_to_fit`] method
     fn shrink_to_fit(&mut self) {
         self.shrink_to_fit();
     }
@@ -45,18 +51,27 @@ where
     K: Eq + Hash,
     S: BuildHasher,
 {
+    /// Call the [`HashMap::shrink_to_fit`] method
     fn shrink_to_fit(&mut self) {
         self.shrink_to_fit();
     }
 }
 
 impl ShrinkFitable for String {
+    /// Call the [`String::shrink_to_fit`] method
     fn shrink_to_fit(&mut self) {
         self.shrink_to_fit();
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+/// The [`ShrinkFitable`] wrapper
+///
+/// As you might notice, this structure only implement [`Deref`] of `S`.
+/// If you want to borrow `S` mutably, use [`ShrinkFitWrapper::as_inner_mut`]
+///
+/// *Note*: This structure does not call `shrink_to_fit` once it is dropped, only [`ShrinkFitWrapperMutGuard`] does.
+///
+#[derive(Debug, Clone, Copy, Default)]
 pub struct ShrinkFitWrapper<S> {
     container: S,
     duration: Option<Duration>,
@@ -64,6 +79,7 @@ pub struct ShrinkFitWrapper<S> {
 }
 
 impl<S> ShrinkFitWrapper<S> {
+    /// create a new wrapper
     pub fn new(container: S) -> Self {
         Self {
             container,
@@ -71,17 +87,24 @@ impl<S> ShrinkFitWrapper<S> {
             last_shrink: None,
         }
     }
+    /// Sets the period of time how we shrink the underlying container
     pub fn set_shrink_duration_cycle(mut self, cycle_duration: Duration) -> Self {
         self.duration = Some(cycle_duration);
+        self.last_shrink = Some(Instant::now());
         self
     }
+    /// Remove the period cycle
     pub fn no_cycle(mut self) -> Self {
         self.duration = None;
         self
     }
+    /// Get the last time the underlying container was `shrink_to_fit`-ed
     pub fn last_shrink(&self) -> Option<Instant> {
         self.last_shrink
     }
+    /// Get the underlying container
+    ///
+    /// *Note*: this function will not trigger `shrink_to_fit`
     pub fn into_inner(self) -> S {
         self.container
     }
@@ -91,9 +114,11 @@ impl<S> ShrinkFitWrapper<S>
 where
     S: ShrinkFitable,
 {
+    /// Borrow the wrapper as mutable guard
     pub fn as_inner_mut(&mut self) -> ShrinkFitWrapperMutGuard<'_, S> {
         ShrinkFitWrapperMutGuard(Some(self))
     }
+    /// Call [`ShrinkFitable::shrink_to_fit`] of the underlying container
     pub fn shrink_to_fit(&mut self) {
         self.container.shrink_to_fit();
     }
@@ -106,6 +131,7 @@ impl<S> Deref for ShrinkFitWrapper<S> {
     }
 }
 
+/// A [`ShrinkFitWrapper`] guard that once dropped will trigger [`ShrinkFitable::shrink_to_fit`] of the wrapper container
 #[derive(Debug)]
 pub struct ShrinkFitWrapperMutGuard<'a, S>(Option<&'a mut ShrinkFitWrapper<S>>)
 where
@@ -115,6 +141,7 @@ impl<'a, S> ShrinkFitWrapperMutGuard<'a, S>
 where
     S: ShrinkFitable,
 {
+    /// Drops the guard without triggering `shrink_to_fit`
     pub fn disarm(mut self) {
         self.0.take();
     }
