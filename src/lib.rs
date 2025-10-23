@@ -57,13 +57,13 @@ impl ShrinkFitable for String {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct FitShrinkWrapper<S> {
+pub struct ShrinkFitWrapper<S> {
     container: S,
     duration: Option<Duration>,
     last_shrink: Option<Instant>,
 }
 
-impl<S> FitShrinkWrapper<S> {
+impl<S> ShrinkFitWrapper<S> {
     pub fn new(container: S) -> Self {
         Self {
             container,
@@ -87,19 +87,19 @@ impl<S> FitShrinkWrapper<S> {
     }
 }
 
-impl<S> FitShrinkWrapper<S>
+impl<S> ShrinkFitWrapper<S>
 where
     S: ShrinkFitable,
 {
-    pub fn as_inner_mut(&mut self) -> FitShrinkWrapperMutGuard<'_, S> {
-        FitShrinkWrapperMutGuard(Some(self))
+    pub fn as_inner_mut(&mut self) -> ShrinkFitWrapperMutGuard<'_, S> {
+        ShrinkFitWrapperMutGuard(Some(self))
     }
     pub fn shrink_to_fit(&mut self) {
         self.container.shrink_to_fit();
     }
 }
 
-impl<S> Deref for FitShrinkWrapper<S> {
+impl<S> Deref for ShrinkFitWrapper<S> {
     type Target = S;
     fn deref(&self) -> &Self::Target {
         &self.container
@@ -107,11 +107,11 @@ impl<S> Deref for FitShrinkWrapper<S> {
 }
 
 #[derive(Debug)]
-pub struct FitShrinkWrapperMutGuard<'a, S>(Option<&'a mut FitShrinkWrapper<S>>)
+pub struct ShrinkFitWrapperMutGuard<'a, S>(Option<&'a mut ShrinkFitWrapper<S>>)
 where
     S: ShrinkFitable;
 
-impl<'a, S> FitShrinkWrapperMutGuard<'a, S>
+impl<'a, S> ShrinkFitWrapperMutGuard<'a, S>
 where
     S: ShrinkFitable,
 {
@@ -120,7 +120,7 @@ where
     }
 }
 
-impl<'a, S> Deref for FitShrinkWrapperMutGuard<'a, S>
+impl<'a, S> Deref for ShrinkFitWrapperMutGuard<'a, S>
 where
     S: ShrinkFitable,
 {
@@ -130,7 +130,7 @@ where
     }
 }
 
-impl<'a, S> DerefMut for FitShrinkWrapperMutGuard<'a, S>
+impl<'a, S> DerefMut for ShrinkFitWrapperMutGuard<'a, S>
 where
     S: ShrinkFitable,
 {
@@ -139,7 +139,7 @@ where
     }
 }
 
-impl<'a, S> Drop for FitShrinkWrapperMutGuard<'a, S>
+impl<'a, S> Drop for ShrinkFitWrapperMutGuard<'a, S>
 where
     S: ShrinkFitable,
 {
@@ -169,7 +169,7 @@ mod tests {
 
     #[test]
     fn test_shrink_no_cycles() {
-        let mut stack = FitShrinkWrapper::new({
+        let mut stack = ShrinkFitWrapper::new({
             let mut my_vec = Vec::with_capacity(10);
             my_vec.extend(0..3u32);
             my_vec
@@ -179,7 +179,7 @@ mod tests {
     }
     #[test]
     fn test_shrink_with_cycles() {
-        let mut stack = FitShrinkWrapper::new({
+        let mut stack = ShrinkFitWrapper::new({
             let mut my_vec = Vec::with_capacity(10);
             my_vec.extend(0..3u32);
             my_vec
