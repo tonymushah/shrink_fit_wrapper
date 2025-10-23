@@ -1,4 +1,5 @@
-/// An _extremely_ simple, "automatic" `shrink_to_fit` on any mut
+//! An _extremely_ simple, "automatic" `shrink_to_fit` on any mut.
+
 use std::{
     collections::{BinaryHeap, HashMap, HashSet, VecDeque},
     hash::{BuildHasher, Hash},
