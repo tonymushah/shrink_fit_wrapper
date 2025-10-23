@@ -6,5 +6,6 @@ authors = ["tonymushah <tonymushahdev06@yahoo.com>"]
 description = "\"shrink_to_fit\" on any \"mut\""
 license-file = "LICENSE"
 repository = "https://github.com/tonymushah/shrink_fit_wrapper"
+keyworks = ["shrink_to_fit"]
 
 [dependencies]
